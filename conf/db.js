@@ -3,7 +3,7 @@ const env = process.env.NODE_ENV
 const MYSQL_CONF = {
   host: 'localhost',
   user: 'root',
-  password: 'Xiao1027',
+  password: 'yy.tongcheng',
   port: '3306',
   database: 'sheep'
 }

@@ -23,6 +23,16 @@ router.post('/runCase', (req, res, next) => {
 router.post('/saveCase', (req, res, next) => {
   console.log('req.body',req.body)
   saveCase(req.body)
+  .then(data => {
+    // if (data.status == 200) {
+      res.json(new SuccessModel(data))
+    // } else {
+    //   res.json(new ErrorModel('sorry'))
+    // }
+  })
+  .catch(e => {
+    res.json(new ErrorModel(e))
+  })
 })
 
 // 更新用例

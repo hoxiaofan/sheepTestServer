@@ -1,5 +1,6 @@
 let axios = require('../utils/axios')
 let utils = require('../utils/utils')
+const { exec, escape } = require('../db/mysql')
 let assert = require('assert').strict
 
 const runCase = ({optionsCase, assertionsData}) => {
@@ -109,7 +110,17 @@ function getKeyword(string, condition) {
 const saveCase = (caseData = {}) => {
   console.log(caseData)
   // caseData.interface_info
-}
+  const sql = `
+  insert into interface_info (name, url, method_type, header, body, expected, description) value ("${caseData.name}", "${caseData.url}", "${caseData.method_type}", '${caseData.header}', '${caseData.body}', '${caseData.expected}', "${caseData.description}")`
+  return exec(sql).then(saveCase => {
+        return {
+          userId: saveCase.insertId
+        }
+      })
+  }
+  
+
+
 
 const updateCase = (id, caseData = {}) => {
 
