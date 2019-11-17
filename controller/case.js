@@ -1,7 +1,8 @@
-let axios = require('../utils/axios')
-let utils = require('../utils/utils')
+const axios = require('../utils/axios')
+const utils = require('../utils/utils')
+const xss = require('xss')
 const { exec, escape } = require('../db/mysql')
-let assert = require('assert').strict
+const assert = require('assert').strict
 
 const runCase = ({optionsCase, assertionsData}) => {
   let {url, headers, data, method} = optionsCase
@@ -108,13 +109,16 @@ function getKeyword(string, condition) {
 
 
 const saveCase = (caseData = {}) => {
-  console.log(caseData)
-  // caseData.interface_info
+  let name = xss(caseData.name)
+  let url = xss(caseData.url)
+  let header = xss(caseData.header)
+  let body = xss(caseData.body)
+  let description = xss(caseData.description)
   const sql = `
-  insert into interface_info (name, url, method_type, header, body, expected, description) value ("${caseData.name}", "${caseData.url}", "${caseData.method_type}", '${caseData.header}', '${caseData.body}', '${caseData.expected}', "${caseData.description}")`
+  insert into interface_info (name, url, method_type, header, body, expected, description) value ("${name}", "${url}", "${caseData.method_type}", '${header}', '${body}', '${caseData.expected}', "${description}")`
   return exec(sql).then(saveCase => {
         return {
-          userId: saveCase.insertId
+          caseId: saveCase.insertId
         }
       })
   }
