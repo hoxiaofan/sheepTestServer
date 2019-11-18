@@ -1,7 +1,9 @@
-let express = require('express')
-let router = express.Router()
-let { SuccessModel, ErrorModel } = require('../model/resModel')
-let { runCase, saveCase, getCaseList, updateCase, delCase } = require('../controller/case')
+const express = require('express')
+const router = express.Router()
+const { SuccessModel, ErrorModel } = require('../model/resModel')
+const { runCase, saveCase, getCaseList, updateCase, delCase } = require('../controller/case')
+const loginCheck = require('../middleware/loginCheck')
+
 
 // 用例执行
 router.post('/runCase', (req, res, next) => {
@@ -19,9 +21,10 @@ router.post('/runCase', (req, res, next) => {
 })
 
 // 保存用例
-router.post('/saveCase', (req, res, next) => {
-  console.log('req.body',req.body)
-  saveCase(req.body)
+router.post('/saveCase', loginCheck, (req, res, next) => {
+  let createUser = req.session.useremail
+
+  saveCase(req.body, createUser)
   .then(data => {
     res.json(new SuccessModel(data))
   })
@@ -31,7 +34,8 @@ router.post('/saveCase', (req, res, next) => {
 })
 
 // caselist
-router.get('/caseList', (req, res, next) => {
+router.get('/caseList', loginCheck, (req, res, next) => {
+  console.log(req.session)
   let user = req.query.user || ''
   let keyword = req.query.keyword || ''
   getCaseList(user, keyword)

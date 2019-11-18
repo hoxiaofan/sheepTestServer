@@ -108,14 +108,15 @@ function getKeyword(string, condition) {
 }
 
 
-const saveCase = (caseData = {}) => {
+const saveCase = (caseData = {}, createUser) => {
+  console.log(caseData)
   let name = xss(caseData.name)
   let url = xss(caseData.url)
   let header = xss(caseData.header)
   let body = xss(caseData.body)
   let description = xss(caseData.description)
   const sql = `
-  insert into interface_info (name, url, method_type, header, body, expected, description) value ("${name}", "${url}", "${caseData.method_type}", '${header}', '${body}', '${caseData.expected}', "${description}")`
+  insert into interface_info (name, url, method_type, header, body, create_user, expected, description) value ('${name}', '${url}', '${caseData.method_type}', '${header}', '${body}', '${createUser}', '${caseData.expected}', '${description}')`
   return exec(sql).then(saveCase => {
       return {
         caseId: saveCase.insertId
@@ -125,18 +126,18 @@ const saveCase = (caseData = {}) => {
 
 const getCaseList = (user, keyword) => {
   let sql = `select id, name, url, method_type, header, body, expected, description from interface_info where 1=1 `
-    if (user) {
-        sql += `and create_user='${user}' `
+  if (user) {
+      sql += `and create_user='${user}' `
+  }
+  if (keyword) {
+      sql += `and title like '%${keyword}%' `
+  }
+  sql += `order by create_time desc;`
+  return exec(sql).then(listData => {
+    return {
+      caseList: listData
     }
-    if (keyword) {
-        sql += `and title like '%${keyword}%' `
-    }
-    sql += `order by create_time desc;`
-    return exec(sql).then(listData => {
-      return {
-        caseList: listData
-      }
-    })
+  })
 }
 
 const updateCase = (id, caseData = {}) => {
