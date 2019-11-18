@@ -117,14 +117,27 @@ const saveCase = (caseData = {}) => {
   const sql = `
   insert into interface_info (name, url, method_type, header, body, expected, description) value ("${name}", "${url}", "${caseData.method_type}", '${header}', '${body}', '${caseData.expected}', "${description}")`
   return exec(sql).then(saveCase => {
-        return {
-          caseId: saveCase.insertId
-        }
-      })
-  }
-  
+      return {
+        caseId: saveCase.insertId
+      }
+    })
+}
 
-
+const getCaseList = (user, keyword) => {
+  let sql = `select id, name, url, method_type, header, body, expected, description from interface_info where 1=1 `
+    if (user) {
+        sql += `and create_user='${user}' `
+    }
+    if (keyword) {
+        sql += `and title like '%${keyword}%' `
+    }
+    sql += `order by create_time desc;`
+    return exec(sql).then(listData => {
+      return {
+        caseList: listData
+      }
+    })
+}
 
 const updateCase = (id, caseData = {}) => {
 
@@ -137,6 +150,7 @@ const delCase = (id) => {
 module.exports = {
   runCase,
   saveCase,
+  getCaseList,
   updateCase,
   delCase
 }

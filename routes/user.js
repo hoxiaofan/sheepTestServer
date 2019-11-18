@@ -17,6 +17,7 @@ router.post('/login', (req, res) => {
   .catch(e => {
     res.json(new ErrorModel(e,'服务错误'))
   })
+  
 })
 
 router.post('/register', (req, res) => {

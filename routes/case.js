@@ -1,11 +1,10 @@
 let express = require('express')
 let router = express.Router()
 let { SuccessModel, ErrorModel } = require('../model/resModel')
-let { runCase, saveCase, updateCase, delCase } = require('../controller/case')
+let { runCase, saveCase, getCaseList, updateCase, delCase } = require('../controller/case')
 
 // 用例执行
 router.post('/runCase', (req, res, next) => {
-  console.log('ok')
   runCase(req.body)
   .then(data => {
     // if (data.status == 200) {
@@ -24,11 +23,20 @@ router.post('/saveCase', (req, res, next) => {
   console.log('req.body',req.body)
   saveCase(req.body)
   .then(data => {
-    // if (data.status == 200) {
-      res.json(new SuccessModel(data))
-    // } else {
-    //   res.json(new ErrorModel('sorry'))
-    // }
+    res.json(new SuccessModel(data))
+  })
+  .catch(e => {
+    res.json(new ErrorModel(e))
+  })
+})
+
+// caselist
+router.get('/caseList', (req, res, next) => {
+  let user = req.query.user || ''
+  let keyword = req.query.keyword || ''
+  getCaseList(user, keyword)
+  .then(listData => {
+    res.json(new SuccessModel(listData))
   })
   .catch(e => {
     res.json(new ErrorModel(e))
