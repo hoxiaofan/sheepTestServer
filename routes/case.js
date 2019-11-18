@@ -37,7 +37,18 @@ router.post('/saveCase', (req, res, next) => {
 
 // 更新用例
 router.post('/updataCase', (req, res, next) => {
-
+  console.log('req.body',req.body)
+  updateCase(req.body)
+  .then(data => {
+    // if (data.status == 200) {
+      res.json(new SuccessModel(data))
+    // } else {
+    //   res.json(new ErrorModel('sorry'))
+    // }
+  })
+  .catch(e => {
+    res.json(new ErrorModel(e))
+  })
 })
 
 module.exports = router;

@@ -114,7 +114,7 @@ const saveCase = (caseData = {}) => {
   insert into interface_info (name, url, method_type, header, body, expected, description) value ("${caseData.name}", "${caseData.url}", "${caseData.method_type}", '${caseData.header}', '${caseData.body}', '${caseData.expected}', "${caseData.description}")`
   return exec(sql).then(saveCase => {
         return {
-          userId: saveCase.insertId
+          caseId: saveCase.insertId
         }
       })
   }
@@ -123,7 +123,15 @@ const saveCase = (caseData = {}) => {
 
 
 const updateCase = (id, caseData = {}) => {
-
+  console.log(caseData)
+  // caseData.interface_info
+  const sql = `
+  update interface_info set(name = "${caseData.name}", url = "${caseData.url}", method_type = "${caseData.method_type}", header = '${caseData.header}', body = '${caseData.body}', expected = '${caseData.expected}', description) = "${caseData.description}")`
+  return exec(sql).then(updateCase => {
+        return {
+          caseId: updateCase.insertId
+        }
+      })
 }
 
 const delCase = (id) => {
