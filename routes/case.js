@@ -48,7 +48,7 @@ router.get('/caseList', loginCheck, (req, res, next) => {
 })
 
 // 更新用例
-router.post('/updataCase', (req, res, next) => {
+router.post('/updataCase', loginCheck, (req, res, next) => {
 
 })
 
