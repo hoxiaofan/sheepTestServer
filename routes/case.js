@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { SuccessModel, ErrorModel } = require('../model/resModel')
-const { runCase, saveCase, getCaseList, updateCase, delCase } = require('../controller/case')
+const { runCase, saveCase, getCaseList, updateCase, getCase, delCase } = require('../controller/case')
 const loginCheck = require('../middleware/loginCheck')
 
 
@@ -47,9 +47,27 @@ router.post('/updataCase', loginCheck, (req, res, next) => {
   }
 })
 
+// getCase
+router.get('/getCase', loginCheck, (req, res, next) => {
+  if (req.query.caseId == null) {
+    res.json(new ErrorModel({
+      error: 'id is null',
+      error_description: 'id不能为空'
+    }))
+    return
+  }
+  let caseId = req.query.caseId
+  getCase(caseId)
+  .then(data => {
+    res.json(new SuccessModel(data))
+  })
+  .catch(e => {
+    res.json(new ErrorModel(e))
+  })
+})
+
 // caselist
 router.get('/caseList', loginCheck, (req, res, next) => {
-  console.log(req.session)
   let user = req.query.user || ''
   let keyword = req.query.keyword || ''
   getCaseList(user, keyword)

@@ -109,7 +109,6 @@ function getKeyword(string, condition) {
 
 //保存
 const saveCase = (caseData = {}, createUser) => {
-  console.log(caseData)
   let name = xss(caseData.name)
   let url = xss(caseData.url)
   let header = xss(caseData.header)
@@ -125,7 +124,8 @@ const saveCase = (caseData = {}, createUser) => {
 }
 
 const getCaseList = (user, keyword) => {
-  let sql = `select id, name, url, method_type, header, body, expected, description from interface_info where 1=1 `
+  // let sql = `select id, name, url, method_type, header, body, expected, description from interface_info where 1=1 `
+  let sql = `select id, name from interface_info where 1=1 `
   if (user) {
       sql += `and create_user='${user}' `
   }
@@ -136,6 +136,19 @@ const getCaseList = (user, keyword) => {
   return exec(sql).then(listData => {
     return {
       caseList: listData
+    }
+  })
+}
+// case详情
+const getCase = (caseId) => {
+  let sql = `select id, name, url, method_type, header, body, expected, description from interface_info where 1=1 `
+  if (caseId) {
+      sql += `and id='${caseId}'; `
+  }
+  
+  return exec(sql).then(data => {
+    return {
+      case: data && data[0]
     }
   })
 }
@@ -167,5 +180,6 @@ module.exports = {
   saveCase,
   getCaseList,
   updateCase,
+  getCase,
   delCase
 }
