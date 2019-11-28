@@ -154,20 +154,22 @@ const getCase = (caseId) => {
 }
 
 const updateCase = (caseData = {}, updateUser) => {
-  console.log(caseData)
-  let id = xss(caseData.id)
+  let id = xss(caseData.caseId)
   let name = xss(caseData.name)
   let url = xss(caseData.url)
   let header = xss(caseData.header)
   let body = xss(caseData.body)
   let description = xss(caseData.description)
   const sql = `
-  update interface_info set name = '${name}', url = '${url}', method_type = '${caseData.method_type}', header = '${header}', body = '${body}', update_user = '${updateUser}', expected = '${caseData.expected}', description = '${description}' where id = ${id}`
+  update interface_info set name = '${name}', url = '${url}', 
+  method_type = '${caseData.method_type}', header = '${header}', 
+  body = '${body}', update_user = '${updateUser}', expected = '${caseData.expected}', 
+  description = '${description}' where id = ${id};`
   return exec(sql).then(updateCase => {
-      return {
-        caseId: updateCase.insertId
-      }
-    })
+    return {
+      changedRows: updateCase.changedRows
+    }
+  })
 }
 
 

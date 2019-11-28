@@ -33,18 +33,22 @@ router.post('/saveCase', loginCheck, (req, res, next) => {
 })
 
 // 更新用例
-router.post('/updataCase', loginCheck, (req, res, next) => {
+router.post('/updateCase', loginCheck, (req, res, next) => {
   let updateUser = req.session.useremail
-  console.log(req.body.id)
-  if (req.body.id !== null){
-    updateCase(req.body, updateUser)
-    .then(data => {
-      res.json(new SuccessModel(data))
-    })
-    .catch(e => {
-      res.json(new ErrorModel(e))
-    })
+  if (req.body.caseId == null) {
+    res.json(new ErrorModel({
+      error: 'id is null',
+      error_description: 'id不能为空'
+    }))
+    return
   }
+  updateCase(req.body, updateUser)
+  .then(data => {
+    res.json(new SuccessModel(data))
+  })
+  .catch(e => {
+    res.json(new ErrorModel(e))
+  })
 })
 
 // getCase
