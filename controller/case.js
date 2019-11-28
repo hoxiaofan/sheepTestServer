@@ -125,7 +125,7 @@ const saveCase = (caseData = {}, createUser) => {
 
 const getCaseList = (user, keyword) => {
   // let sql = `select id, name, url, method_type, header, body, expected, description from interface_info where 1=1 `
-  let sql = `select id, name from interface_info where 1=1 `
+  let sql = `select id, name from interface_info where status=1 `
   if (user) {
       sql += `and create_user='${user}' `
   }
@@ -172,9 +172,16 @@ const updateCase = (caseData = {}, updateUser) => {
   })
 }
 
-
-const delCase = (id) => {
-
+//删除
+const delCase = (caseData = {}) => {
+  let caseId = xss(caseData.caseId)
+  const sql = `
+  update interface_info set status = 0 where id = ${caseId};`
+  return exec(sql).then(delCase => {
+      return {
+        status:"删除成功！" 
+      }
+    })
 }
 
 module.exports = {

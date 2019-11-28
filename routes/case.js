@@ -89,3 +89,22 @@ router.post('/updataCase', loginCheck, (req, res, next) => {
 })
 
 module.exports = router;
+
+//删除用例
+router.post('/delCase', loginCheck, (req, res, next) => {
+  
+  if (req.body.caseId == null) {
+    res.json(new ErrorModel({
+      error: 'id is null',
+      error_description: 'id不能为空'
+    }))
+    return
+  }
+  delCase(req.body)
+  .then(data => {
+    res.json(new SuccessModel(data))
+  })
+  .catch(e => {
+    res.json(new ErrorModel(e))
+  })
+})
