@@ -2,7 +2,7 @@ const xss = require('xss')
 const { exec, escape } = require('../db/mysql')
 
 //保存 sql
-const saveCaseData = (caseData = {}, createUser) => {
+const saveCaseData = (caseData, createUser) => {
   let name = xss(caseData.name)
   let url = xss(caseData.url)
   let header = xss(caseData.header)
