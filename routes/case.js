@@ -33,7 +33,7 @@ router.post('/saveCase', loginCheck, (req, res, next) => {
 })
 // 更新描述
 router.post('/updateDesc', loginCheck, (req, res, next) => {
-  Console.log('kao')
+  console.log('kao')
   let updateUser = req.session.useremail
   if (req.body.caseId == null){
     res.json(new ErrorModel({
