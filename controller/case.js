@@ -54,7 +54,7 @@ const getCase = (caseId) => {
 const updateDesc = (caseData = {}, updateUser) => {
   let description = xss(caseData.event)
   const sql = `
-  update interface_info set description = '${description}' where id = ${id};`
+  update interface_info set description = '${description}' , update_user = '${updateUser}' where id = ${caseData.caseId};`
   return exec(sql).then(updateDesc =>{
     return{
       changedDesc:updateDesc.changedDesc
