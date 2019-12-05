@@ -50,7 +50,19 @@ const getCase = (caseId) => {
     }
   })
 }
+//更新描述
+const updateDesc = (caseData = {}, updateUser) => {
+  let description = xss(caseData.event)
+  const sql = `
+  update interface_info set description = '${description}' where id = ${id};`
+  return exec(sql).then(updateDesc =>{
+    return{
+      changedDesc:updateDesc.changedDesc
+    }
+  })
+}
 
+//更新
 const updateCase = (caseData = {}, updateUser) => {
   let id = xss(caseData.caseId)
   let name = xss(caseData.name)
@@ -88,5 +100,6 @@ module.exports = {
   getCaseList,
   updateCase,
   getCase,
-  delCase
+  delCase,
+  updateDesc
 }

@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { SuccessModel, ErrorModel } = require('../model/resModel')
-const { runCase, saveCase, getCaseList, updateCase, getCase, delCase } = require('../controller/case')
+const { runCase, saveCase, getCaseList, updateCase, getCase, delCase, updateDesc } = require('../controller/case')
 const loginCheck = require('../middleware/loginCheck')
 
 
@@ -24,6 +24,25 @@ router.post('/runCase', (req, res, next) => {
 router.post('/saveCase', loginCheck, (req, res, next) => {
   let createUser = req.session.useremail
   saveCase(req.body, createUser)
+  .then(data => {
+    res.json(new SuccessModel(data))
+  })
+  .catch(e => {
+    res.json(new ErrorModel(e))
+  })
+})
+// 更新描述
+router.post('/updateDesc', loginCheck, (req, res, next) => {
+  Console.log('kao')
+  let updateUser = req.session.useremail
+  if (req.body.caseId == null){
+    res.json(new ErrorModel({
+      error:'id is null',
+      error_description: 'id 不能为空'
+    }))
+    return
+  }
+  updateDesc(req.body, updateUser)
   .then(data => {
     res.json(new SuccessModel(data))
   })
@@ -81,11 +100,6 @@ router.get('/caseList', loginCheck, (req, res, next) => {
   .catch(e => {
     res.json(new ErrorModel(e))
   })
-})
-
-// 更新用例
-router.post('/updataCase', loginCheck, (req, res, next) => {
-
 })
 
 module.exports = router;
