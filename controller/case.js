@@ -3,7 +3,22 @@ const xss = require('xss')
 const { exec, escape } = require('../db/mysql')
 const { runCase } = require('./runCase')
 
+//title重复校验
+const checkTName = (name) => {
+  let sql = `select name from interface_info where name="${name}" `
+  //console.log(name)
+  return exec(sql).then(data => {
+    console.log(data)
+    let checkStatus = false
+    if(data.length > 0){
+      checkStatus = true
+    }
+    return {
+      checkStatus: checkStatus
+    }
 
+  })
+}
 //保存
 const saveCase = (caseData = {}, createUser) => {
   let name = xss(caseData.name)
@@ -101,5 +116,6 @@ module.exports = {
   updateCase,
   getCase,
   delCase,
-  updateDesc
+  updateDesc,
+  checkTName
 }

@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { SuccessModel, ErrorModel } = require('../model/resModel')
-const { runCase, saveCase, getCaseList, updateCase, getCase, delCase, updateDesc } = require('../controller/case')
+const { runCase, saveCase, getCaseList, updateCase, getCase, delCase, updateDesc, checkTName } = require('../controller/case')
 const loginCheck = require('../middleware/loginCheck')
 
 
@@ -14,6 +14,19 @@ router.post('/runCase', (req, res, next) => {
     // } else {
     //   res.json(new ErrorModel('sorry'))
     // }
+  })
+  .catch(e => {
+    res.json(new ErrorModel(e))
+  })
+})
+
+//title重复校验
+router.post('/checkTName', loginCheck,(req, res, next) =>{
+  //let createUser = req.session.useremail
+  checkTName(req.body.caseName)
+  .then(data => {
+    console.log(data)
+    res.json(new SuccessModel(data))
   })
   .catch(e => {
     res.json(new ErrorModel(e))
@@ -33,7 +46,7 @@ router.post('/saveCase', loginCheck, (req, res, next) => {
 })
 // 更新描述
 router.post('/updateDesc', loginCheck, (req, res, next) => {
-  Console.log('kao')
+  console.log('kao')
   let updateUser = req.session.useremail
   if (req.body.caseId == null){
     res.json(new ErrorModel({
