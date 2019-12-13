@@ -1,14 +1,12 @@
 const utils = require('../utils/utils')
 const xss = require('xss')
 const { exec, escape } = require('../db/mysql')
-const { runCase } = require('./runCase')
+const { runCase } = require('./runCase1')
 
 //title重复校验
 const checkTName = (name) => {
-  let sql = `select name from interface_info where name="${name}" `
-  //console.log(name)
+  let sql = `select name from interface_info where name="${name}";`
   return exec(sql).then(data => {
-    console.log(data)
     let checkStatus = false
     if(data.length > 0){
       checkStatus = true
@@ -54,9 +52,12 @@ const getCaseList = (user, keyword) => {
 }
 // case详情
 const getCase = (caseId) => {
-  let sql = `select id, name, url, method_type, header, body, expected, description from interface_info where 1=1 and status != 0 `
+  let sql = `
+  select id, name, url, method_type, header, 
+  body, expected, description from 
+  interface_info where 1=1 and status != 0 `
   if (caseId) {
-      sql += `and id='${caseId}'; `
+    sql += `and id='${caseId}'; `
   }
   
   return exec(sql).then(data => {

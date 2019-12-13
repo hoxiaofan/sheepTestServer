@@ -22,10 +22,8 @@ router.post('/runCase', (req, res, next) => {
 
 //title重复校验
 router.post('/checkTName', loginCheck,(req, res, next) =>{
-  //let createUser = req.session.useremail
   checkTName(req.body.caseName)
   .then(data => {
-    console.log(data)
     res.json(new SuccessModel(data))
   })
   .catch(e => {
@@ -115,8 +113,6 @@ router.get('/caseList', loginCheck, (req, res, next) => {
   })
 })
 
-module.exports = router;
-
 //删除用例
 router.post('/delCase', loginCheck, (req, res, next) => {
   
@@ -135,3 +131,5 @@ router.post('/delCase', loginCheck, (req, res, next) => {
     res.json(new ErrorModel(e))
   })
 })
+
+module.exports = router;

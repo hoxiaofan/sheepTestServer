@@ -1,9 +1,9 @@
 const axios = require('../utils/axios')
 const assert = require('assert').strict
+const _ = require('lodash')
 
 const runCase = ({optionsCase, assertionsData}) => {
   let {url, headers, data, method} = optionsCase
-  // console.log(assertionsData)
   url = encodeURI(url)
   !headers['Content-Type'] && (headers['Content-Type'] = 'application/json;charset=UTF-8')
   return axios({
@@ -16,12 +16,52 @@ const runCase = ({optionsCase, assertionsData}) => {
       resBody: res,
       assertionsResult: assertBodyJSON(res, assertionsData)
     }
-    console.log(resData)
     return resData
   }).catch((e) => {
     return e
   })
 }
+
+// 处理case依赖 '${}'
+function handleDepend(str) {
+  if (!_.isString(str)) return
+  const reg = /\$\{(.*?)\}/
+  // console.log(reg.exec(str))
+  // console.log(str.match(/\$\{(.*?)\}/gm))
+  let dependAry = str.match(/\$\{(.*?)\}/gm)
+  if (dependAry) {
+    let caseDepend = []
+    let dependData = []
+    let dp = {}
+    dependAry.forEach((item, index) => {
+      let exec = reg.exec(item)[1]
+      dp[item] = dependParams(exec)
+      // dependData.push(dp)
+    })
+    console.log('===',dp)
+  }
+}
+// 检查匹配值是变量还是依赖${北京-天津新线路-创建包车单.data.orderNo}|${Time} 返回相关值
+function dependParams(dependVal) {
+  let dependCase = dependVal.split('.')
+  let dependType = {}
+  if (dependCase.length > 1) {
+    dependType = {
+      type: 'depend',
+      exec: dependVal,
+      caseTit: dependCase[0],
+      caseData: dependCase[1]
+    }
+  } else { // 变量依赖
+    dependType = {
+      type: 'param',
+      exec: dependVal,
+      paramData: dependCase[0]
+    }
+  }
+  return dependType
+}
+
 
 // 断言
 function assertBodyJSON(res, assertionsData) {
