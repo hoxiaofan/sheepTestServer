@@ -55,15 +55,20 @@ const getCase = (caseId) => {
   let sql = `
   select id, name, url, method_type, header, 
   body, expected, description from 
-  interface_info where 1=1 and status != 0 `
+  interface_info where status != 0 `
   if (caseId) {
     sql += `and id='${caseId}'; `
   }
   
   return exec(sql).then(data => {
-    return {
-      case: data && data[0]
+    let caseData = {}
+    if (data.length > 0) {
+      caseData.case = data[0]
+      return caseData
+    } else {
+      throw('用例不存在')
     }
+    
   })
 }
 //更新描述

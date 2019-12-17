@@ -4,9 +4,10 @@ const { exec, escape } = require('../db/mysql')
 const _ = require('lodash')
 
 // 缓存
-const caseMap = {}
+let caseMap = {}
 
 const runCase = async ({optionsCase, assertionsData}) => {
+  caseMap = {}
   let reqParams = JSON.stringify(optionsCase)
   let resCaseData = await caseAnalyze(reqParams)
     .then((res) => {
@@ -21,7 +22,7 @@ const runCase = async ({optionsCase, assertionsData}) => {
 }
 
 // 接收完整请求体 接收类型JSON.stringify，返回接口json数据
-const caseAnalyze = async (reqParams) => {
+async function caseAnalyze(reqParams) {
   // 检查是否有依赖，执行bb()
   if (handleDepend(reqParams).length) {
     reqParams = await processDepend(reqParams)
@@ -31,9 +32,8 @@ const caseAnalyze = async (reqParams) => {
   }
   // 执行请求
   let {url, headers, data, method} = JSON.parse(reqParams)
-  // console.log('reqParams',JSON.parse(reqParams))
   url = encodeURI(url)
-  // !headers['Content-Type'] && (headers['Content-Type'] = 'application/json;charset=UTF-8')
+  !headers['Content-Type'] && (headers['Content-Type'] = 'application/json;charset=UTF-8')
   let resData = await axios({
     url,
     headers, 
@@ -45,7 +45,7 @@ const caseAnalyze = async (reqParams) => {
   return resData
 }
 // 处理用例中所包含的所有引用
-const processDepend = async (str) => {
+async function processDepend(str) {
   if (!_.isString(str)) {
     try {
       str = JSON.stringify(str)
@@ -68,7 +68,6 @@ const processDepend = async (str) => {
       })
     let dependDataType = item[itemKey].dependDataType
     // 依赖用例-请求数据
-console.log(item[itemKey])
     
     // // 依赖用例-返回结果数据,执行caseAnalyze()
     // let resBody = caseReqBody && await caseAnalyze(JSON.stringify(caseReqBody))
@@ -119,7 +118,7 @@ async function dependResult(caseReqBody, dependDataType, caseJsonPath) {
     }
     
   }
-  // 匹配失败返回 underfine
+  // 匹配失败返回 undefined
   return dependVal
 }
 // 返回依赖数组
@@ -162,7 +161,7 @@ function dependParams(dependVal) {
   return dependType
 }
 
-// 通过匹配出的caseTit获取数据库中case数据 异步！
+// 通过匹配出的caseTit获取数据库中case数据
 async function getReqParams(caseTit) {
   let sql = `select * from interface_info where name="${caseTit}" and status != 0;`
   let reqParams = exec(sql).then((data) => {
@@ -182,14 +181,6 @@ async function getReqParams(caseTit) {
   
   return reqParams
 }
-// 包含完整参数 调取接口
-// async function axios(reqParams) {
-//   let reqParamsTit = _.isPlainObject(reqParams) ? reqParams : JSON.parse(reqParams)
-//   // let reqParamsTit = JSON.parse(reqParams)
-//   console.log('\nreqParams\n',reqParams)
-//   return caseData[reqParamsTit.caseTit].res
-// }
-
 
 // 断言
 function assertBodyJSON(res, assertionsData) {
