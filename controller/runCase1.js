@@ -3,7 +3,10 @@ const assert = require('assert').strict
 const { exec, escape } = require('../db/mysql')
 const _ = require('lodash')
 
-// 缓存
+/* 
+  key为title类型时缓存用例request数据
+  key为url类型时缓存接口response数据 
+*/
 let caseMap = {}
 
 const runCase = async ({optionsCase, assertionsData}) => {
@@ -24,6 +27,7 @@ const runCase = async ({optionsCase, assertionsData}) => {
 // 接收完整请求体 接收类型JSON.stringify，返回接口json数据
 async function caseAnalyze(reqParams) {
   // 检查是否有依赖，执行bb()
+  console.log('reqParamsreqParams',handleDepend(reqParams))
   if (handleDepend(reqParams).length) {
     reqParams = await processDepend(reqParams)
       .catch((error) => {
@@ -33,13 +37,20 @@ async function caseAnalyze(reqParams) {
   // 执行请求
   let {url, headers, data, method} = JSON.parse(reqParams)
   url = encodeURI(url)
-  !headers['Content-Type'] && (headers['Content-Type'] = 'application/json;charset=UTF-8')
-  let resData = await axios({
-    url,
-    headers, 
-    data, 
-    method
-  })
+  let resData = {}
+  if (_.has(caseMap, [`${url}`])) {
+    resData = _.get(caseMap, [`${url}`])
+  } else {
+    !headers['Content-Type'] && (headers['Content-Type'] = 'application/json;charset=UTF-8')
+    resData = await axios({
+      url,
+      headers, 
+      data, 
+      method
+    })
+    // 缓存用例res结果
+    _.set(caseMap, [`${url}`], resData)
+  }
   console.log('axiosData', resData)
   // 返回请求结果
   return resData
@@ -66,6 +77,7 @@ async function processDepend(str) {
       .catch((error) => {
         console.error('getReqParams',error)
       })
+    _.set(caseMap, [item[itemKey].caseTit], caseReqBody)
     let dependDataType = item[itemKey].dependDataType
     // 依赖用例-请求数据
     
@@ -76,7 +88,9 @@ async function processDepend(str) {
     //   })
     // 获取依赖结果值匹配返回值
     let dependVal = await dependResult(caseReqBody, dependDataType, item[itemKey].caseJsonPath)
-    
+    console.log('dependVal-caseReqBody',caseReqBody)
+    console.log('dependVal-dependDataType',dependDataType)
+    console.log('dependVal-caseJsonPath',item[itemKey].caseJsonPath)
     // 参数匹配失败/用例执行失败
     if (dependVal == null) {
       throw (`依赖用例 ${item[itemKey].caseTit} 执行错误！`)
